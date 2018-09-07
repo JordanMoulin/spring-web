@@ -13,7 +13,7 @@ import com.formation.service.MessageServiceImpl;
 @RestController
 @RequestMapping("/admin")
 public class BenderController {
-	MessageService serv = new MessageServiceImpl();
+	private MessageService serv = new MessageServiceImpl();
 
 	@RequestMapping(value = "/messages", produces = { "application/JSON" }, method = RequestMethod.GET)
 	public List<Message> findAllMessages() {

@@ -22,6 +22,27 @@ public class MessageServiceImpl implements MessageService {
 	@Autowired
 	private MessageRepository repo;
 
+	private List<Message> messages = new ArrayList<Message>();
+	private Boolean init = true;
+
+	public void initilisationList() {
+		Message message1 = new Message();
+		message1.setExpediteur("Arthur");
+		message1.setDestinataire("Perceval");
+		message1.setHeure(LocalDateTime.now());
+		message1.setMessage("Bande d'idiots");
+
+		Message message2 = new Message();
+		message2.setExpediteur("Perceval");
+		message2.setDestinataire("Arthur");
+		message2.setHeure(LocalDateTime.now());
+		message2.setMessage("C'est pas faux !");
+
+		messages.add(message1);
+		messages.add(message2);
+		init = false;
+	}
+
 	@Override
 	public void send(MessageDto message) {
 		Message newMessage = new Message();
@@ -45,21 +66,9 @@ public class MessageServiceImpl implements MessageService {
 
 	@Override
 	public List<Message> findAllMessages() {
-		List<Message> messages = new ArrayList<Message>();
-		Message message1 = new Message();
-		message1.setExpediteur("Arthur");
-		message1.setDestinataire("Perceval");
-		message1.setHeure(LocalDateTime.now());
-		message1.setMessage("Bande d'idiots");
-
-		Message message2 = new Message();
-		message2.setExpediteur("Perceval");
-		message2.setDestinataire("Arthur");
-		message2.setHeure(LocalDateTime.now());
-		message2.setMessage("C'est pas faux !");
-
-		messages.add(message1);
-		messages.add(message2);
+		if (init) {
+			initilisationList();
+		}
 		return messages;
 	}
 

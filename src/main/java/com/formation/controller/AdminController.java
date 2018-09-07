@@ -1,9 +1,9 @@
 package com.formation.controller;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.formation.model.Message;
@@ -22,27 +23,12 @@ import com.formation.validator.MessageValidator;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-	private List<Message> messages = new ArrayList<Message>();
+	private RestTemplate template = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
 
 	@GetMapping("/messages")
 	public ModelAndView directWithMessage() {
 		ModelAndView modelAndView = new ModelAndView();
-
-		Message message1 = new Message();
-		message1.setExpediteur("Arthur");
-		message1.setDestinataire("Perceval");
-		message1.setHeure(LocalDateTime.now());
-		message1.setMessage("Bande d'idiots");
-
-		Message message2 = new Message();
-		message2.setExpediteur("Perceval");
-		message2.setDestinataire("Arthur");
-		message2.setHeure(LocalDateTime.now());
-		message2.setMessage("C'est pas faux !");
-
-		messages.add(message1);
-		messages.add(message2);
-
+		List<?> messages = template.getForObject("http://localhost:8080/service/admin/messages/", List.class);
 		modelAndView.addObject("msg", messages);
 		modelAndView.setViewName("list");
 		return modelAndView;
@@ -63,6 +49,7 @@ public class AdminController {
 		model.addAttribute("destinataire", message.getDestinataire());
 		model.addAttribute("message", message.getMessage());
 		Message message1 = new Message();
+		List<Message> messages = template.getForObject("http://localhost:8080/service/admin/messages/", List.class);
 		message1.setDestinataire(message.getDestinataire());
 		message1.setExpediteur(message.getExpediteur());
 		message1.setMessage(message.getMessage());
@@ -75,13 +62,5 @@ public class AdminController {
 	protected void initBinder(WebDataBinder binder) {
 		binder.addValidators(new MessageValidator());
 
-	}
-
-	public List<Message> getMessages() {
-		return messages;
-	}
-
-	public void setMessages(List<Message> messages) {
-		this.messages = messages;
 	}
 }
